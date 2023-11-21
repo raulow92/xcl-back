@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainSlidingView
+from accounts.views import ProfileView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login', TokenObtainSlidingView.as_view(), name='login'),
+    path('profile', ProfileView.as_view(), name='profile'),
 ]
