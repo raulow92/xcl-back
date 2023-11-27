@@ -17,9 +17,13 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainSlidingView
 from accounts.views import ProfileView
+from wallets.views import ChartView, PriceView, WalletView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login', TokenObtainSlidingView.as_view(), name='login'),
     path('profile', ProfileView.as_view(), name='profile'),
+    path('chart', ChartView.as_view(), name='chart'),
+    path('price', PriceView.as_view(), name='price'),
+    path('wallet', WalletView.as_view(), name='wallet'),
 ]
