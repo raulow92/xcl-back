@@ -4,5 +4,5 @@ from accounts.models import User
 
 class Wallet(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE)
-  balanceBTC = models.FloatField(default=0)
-  balanceCLP = models.FloatField(default=0)
+  balance_btc = models.FloatField(default=0)
+  balance_clp = models.FloatField(default=0)
