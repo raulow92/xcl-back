@@ -22,3 +22,18 @@ class WalletView(APIView):
     wallet = current_user.wallet
     serializer = WalletSerializer(wallet)
     return Response(serializer.data)
+  
+class BuyView(APIView):
+  def post(self, request, qty):
+    qty = float(qty)
+    price_response = requests.get("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=clp")
+    price = price_response.json()["bitcoin"]["clp"]
+    user_wallet = request.user.wallet
+    if user_wallet.balance_clp >= qty*price:
+      user_wallet.balance_btc += qty
+      user_wallet.balance_clp -= qty*price
+      user_wallet.save()
+      serializer = WalletSerializer(user_wallet)
+      return Response(serializer.data)
+    else:
+      return Response(status=400)
