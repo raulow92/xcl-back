@@ -4,6 +4,7 @@ from django.shortcuts import render
 from wallets.serializers import WalletSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from decimal import Decimal
 import requests
 
 class ChartView(APIView):
@@ -25,13 +26,28 @@ class WalletView(APIView):
   
 class BuyView(APIView):
   def post(self, request, qty):
-    qty = float(qty)
+    qty = Decimal(qty)
     price_response = requests.get("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=clp")
     price = price_response.json()["bitcoin"]["clp"]
     user_wallet = request.user.wallet
     if user_wallet.balance_clp >= qty*price:
       user_wallet.balance_btc += qty
       user_wallet.balance_clp -= qty*price
+      user_wallet.save()
+      serializer = WalletSerializer(user_wallet)
+      return Response(serializer.data)
+    else:
+      return Response(status=400)
+    
+class SellView(APIView):
+  def post(self, request, qty):
+    qty = Decimal(qty)
+    price_response = requests.get("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=clp")
+    price = price_response.json()["bitcoin"]["clp"]
+    user_wallet = request.user.wallet
+    if user_wallet.balance_btc >= qty:
+      user_wallet.balance_btc -= qty
+      user_wallet.balance_clp += qty*price
       user_wallet.save()
       serializer = WalletSerializer(user_wallet)
       return Response(serializer.data)
